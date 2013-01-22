@@ -1,0 +1,9 @@
+Sample project template for a classic 3 column HTML layout with a WebGL content zone managed by Three.js.
+
+Related Blog: http://www.lucubratory.eu/classic-3-column-css-layout-with-webgl-zone/
+
+Links:
+http://en.wikipedia.org/wiki/WebGL
+https://github.com/mrdoob/three.js/
+https://github.com/jeromeetienne/threejsboilerplate
+http://learningthreejs.com

@@ -1,0 +1,186 @@
+<!-- see http://www.lucubratory.eu/ -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<title></title>
+	<meta name="keywords" content="" />
+	<meta name="description" content="" />
+	<link rel="stylesheet" href="style.css" type="text/css" media="screen,projection" />
+</head>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<title>three.js-page-template 1</title>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		
+		<meta name="keywords" content="" />
+		<meta name="description" content="" />
+		<meta name="viewport" content="width=device-width, user-scalable=yes, height=device-height; initial-scale=1.0;">
+					
+		<script src="Three.js"></script>
+		<script src="Detector.js"></script>
+
+		<link  href="style.css" rel="stylesheet"/>
+	</head>
+<body>
+
+<div id="wrapper">
+
+	<div id="header">
+		Header
+	</div>
+
+	<div id="middle">
+
+		<div id="container">
+			<div id="content">
+				Content 1
+				<br/><br/>
+				LIVE DEMO - Simple classic 3 column template with a WebGL zone managed by the amazing three.js library.
+				<br/>More info, see <a href="http://www.lucubratory.eu/classic-3-column-css-layout-with-webgl-zone/">http://www.lucubratory.eu/</a>.
+				<br/><br/>
+				<div id="content3d"></div>
+				Content 2
+			</div>
+		</div>
+
+		<div class="sidebar" id="sideLeft">
+			Left Sidebar
+		</div>
+
+		<div class="sidebar" id="sideRight">
+			Right Sidebar
+		</div>
+
+	</div>
+
+</div>
+
+<div id="footer">
+	Footer
+</div>
+
+<script type="text/javascript">
+	// Build with http://jeromeetienne.github.com/threejsboilerplatebuilder/
+	// by Jerome Etienne
+	var stats, scene, renderer, composer;
+	var camera, cameraControl;
+
+	if( !init() ) animate();
+
+	// init the scene
+	function init(){
+
+		if( Detector.webgl ){
+			renderer = new THREE.WebGLRenderer({
+				antialias		: true,	// to get smoother output
+				preserveDrawingBuffer	: true	// to allow screenshot
+			});
+			renderer.setClearColorHex( 0xBBBBBB, 1 );
+		}else{
+			renderer	= new THREE.CanvasRenderer();
+		}
+		
+		var content3d=document.getElementById('content3d');
+		
+		// 2 size is the border with we gave to the div in the css file
+		// Next step would be to use jQuery to obtain this value dynamically
+		var w=content3d.offsetWidth-2*2;
+		var h=content3d.offsetHeight-2*2;
+		
+		renderer.setSize(w,h);
+		content3d.appendChild(renderer.domElement);
+
+		// create a scene
+		scene = new THREE.Scene();
+
+		// put a camera in the scene
+		camera	= new THREE.PerspectiveCamera(35, w /*W*/ / h /*H*/, 1, 10000 );
+		camera.position.set(0, 0, 5);
+		scene.add(camera);
+
+		// create a camera contol
+		cameraControls	= new THREE.TrackballControls( camera )
+
+		// transparently support window resize
+		// Inspired by "THREEx.WindowResize.bind(renderer, camera);" from  https://github.com/jeromeetienne/threex
+		var rsCallback= function(){
+			var w=document.getElementById('content3d').offsetWidth-2*2;
+			var h=document.getElementById('content3d').offsetHeight-2*2;
+			renderer.setSize( w, h );
+			camera.aspect=w/h;
+			camera.updateProjectionMatrix();
+		}
+		window.addEventListener('resize', rsCallback, false);
+	
+		// here you add your objects
+		// - you will most likely replace this part by your own
+		var light	= new THREE.AmbientLight( Math.random() * 0xffffff );
+		scene.add( light );
+		var light	= new THREE.DirectionalLight( Math.random() * 0xffffff );
+		light.position.set( Math.random(), Math.random(), Math.random() ).normalize();
+		scene.add( light );
+		var light	= new THREE.DirectionalLight( Math.random() * 0xffffff );
+		light.position.set( Math.random(), Math.random(), Math.random() ).normalize();
+		scene.add( light );
+		var light	= new THREE.PointLight( Math.random() * 0xffffff );
+		light.position.set( Math.random()-0.5, Math.random()-0.5, Math.random()-0.5 )
+					.normalize().multiplyScalar(1.2);
+		scene.add( light );
+		var light	= new THREE.PointLight( Math.random() * 0xffffff );
+		light.position.set( Math.random()-0.5, Math.random()-0.5, Math.random()-0.5 )
+					.normalize().multiplyScalar(1.2);
+		scene.add( light );
+
+		var geometry	= new THREE.CubeGeometry( 2, 2, 2 );
+		var material	= new THREE.MeshLambertMaterial({ambient: 0x808080, color: Math.random() * 0xffffff});
+		var mesh	= new THREE.Mesh( geometry, material ); 
+		scene.add( mesh );
+	}
+
+	// animation loop
+	function animate() {
+		// loop on request animation loop
+		// - it has to be at the begining of the function
+		// - see details at http://my.opera.com/emoller/blog/2011/12/20/requestanimationframe-for-smart-er-animating
+		requestAnimationFrame( animate );
+		// do the render
+		render();
+	}
+
+	// render the scene
+	function render() {
+		// variable which is increase by Math.PI every seconds - usefull for animation
+		var PIseconds	= Date.now() * Math.PI;
+
+		// update camera controls
+		cameraControls.update();
+
+		// animation of all objects
+		for( var i = 0; i < scene.objects.length; i ++ ){
+			scene.objects[ i ].rotation.y = PIseconds*0.0003 * (i % 2 ? 1 : -1);
+			scene.objects[ i ].rotation.x = PIseconds*0.0002 * (i % 2 ? 1 : -1);
+		}
+		
+		// animate DirectionalLight
+		scene.lights.forEach(function(light, idx){
+			if( light instanceof THREE.DirectionalLight === false )	return;
+			var ang	= 0.0005 * PIseconds * (idx % 2 ? 1 : -1);
+			light.position.set(Math.cos(ang), Math.sin(ang), Math.cos(ang*2)).normalize();							
+		});
+		
+		// animate PointLights
+		scene.lights.forEach(function(light, idx){
+			if( light instanceof THREE.PointLight === false )	return;
+			var angle	= 0.0005 * PIseconds * (idx % 2 ? 1 : -1) + idx * Math.PI/3;
+			light.position.set(Math.cos(angle)*3, Math.sin(angle*3)*2, Math.cos(angle*2)).normalize().multiplyScalar(2);
+		});
+
+		// actually render the scene
+		renderer.render( scene, camera );
+	}
+</script>
+
+</body>
+</html>
