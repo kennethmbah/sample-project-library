@@ -1,0 +1,1 @@
+<% response.sendRedirect(request.getContextPath()+"/res/pages/main"); %>

@@ -1,0 +1,29 @@
+/*! Bootstrap overwrites
+    -------------------- */
+
+.hero-unit {
+    font-size: 13px;
+    line-height: 17px;
+    margin-bottom: 10px;
+    padding: 20px;
+}
+
+.hero-unit h1 {
+    font-size: 30px;
+}
+
+.hero-unit img {
+    border: 1px;
+    border-color: black;
+    border-style: solid;
+}
+
+.hero-unit li {
+    line-height: 17px;
+    margin-bottom: 5px;
+}
+
+h2 {
+    font-size: 20px;
+    line-height: 25px;
+}

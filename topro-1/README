@@ -1,0 +1,10 @@
+The "topro" project (short for "topic proposer", sorry I wasn't very inspired on this) is a 
+test that I made to play around with AngularJS. In the opposite to most of the AngularJS 
+examples on the net, the project implements the entire chain: AngualarJS on the browser side, 
+REST to communicate with the application server, JAX-RS/Jersey as server-side REST implementation, 
+JSP as templating system of the server-side front-end, Java EE 6 for server-side back-end. 
+The project demonstrates many different things, some of them are discussed in my blog at 
+
+http://www.lucubratory.eu/
+
+Uses: Bootstrap, jQuery and AngularJS
