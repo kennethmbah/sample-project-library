@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Sample Projects Library : My tutorial, sample and template projects, mostly discussed in my blog and elsewhere.">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Sample Projects Library</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/imifos/sample-project-library">View on GitHub</a>
+
+          <h1 id="project_title">Imifos' Sample Projects Library</h1>
+          <h2 id="project_tagline">jersey-rest-jsp-frame-1</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/imifos/sample-project-library/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/imifos/sample-project-library/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+
+		<h3>Project: Simple Jersey/REST and JSP based Web Application</h3>
+			
+		
+		<div class="entry-content">
+		<p>The aim of this post is to show how to build a <strong>lightweight REST based web application on Jersey and JSP</strong>. This article discusses how to configure Jersey and build the first test skeleton of the REST based application.</p>
+<p><strong>1)</strong> Create an empty dynamic web application project using Eclipse.</p>
+<p><strong>2)</strong> Download Jersey (<a href="http://jersey.java.net/" target="_blank">http://jersey.java.net/</a>) and place the following JARs in the <em>WEB-INF/lib</em> folder: <em>asm-3.3.1.jar, jersey-client-1.12.jar</em> (not needed but is handy for testing), <em>jersey-core-1.12.jar, jersey-json-1.12.jar</em> (needed later for data exchange), <em>jersey-servlet-1.12.jar, jersey-server-1.12.jar.</em></p>
+<p><strong>3)</strong> Download a JSTL implementation, like the Apache Standard Taglib (<a href="http://tomcat.apache.org/taglibs/standard" target="_blank">http://tomcat.apache.org/taglibs/standard</a>) and add <em>jstl.jar</em> and <em>standard.jar</em> to our libraries.</p>
+<p>We use JSP as templating and dynamic page generation engine and JSTL to access Java beans. These are "old" technologies, but very efficient and well proven. Later on, AJAX calls will be performed by a light and quick REST/JSON exchange.</p>
+<p><strong>4)</strong> Create a file <em>welcome-file.jsp</em> in the web file root directory (<em>WebContent</em>), Content:</p>
+<pre><% response.sendRedirect(request.getContextPath()+"/index"); %></pre>
+<p><strong>5)</strong> Create the<em> index.jsp</em> file in the freshly made <em>WEB-INF/jsp</em> folder :</p>
+<pre>&lt%@ page contentType="text/html; charset=UTF-8" language="java" %&gt
+
+&lt%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %&gt
+&lt%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %&gt
+
+&lt!DOCTYPE html&gt
+&lthtml&gt
+&nbsp;&nbsp;&nbsp; &ltbody&gt
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Value: [&ltc:out value="${obj}"/&gt]
+&nbsp;&nbsp;&nbsp; &lt/body&gt
+&lt/html&gt&lt/pre&gt
+&ltp&gtWe store our JSP file in the WEB-INF folder, which means that they cannot accessed from outside the web application by constructing a URL. Every access has to pass via the Controller (Jersey).&lt/p&gt
+&ltp&gt&ltstrong&gt6)&lt/strong&gt Activate and configure Jersey in the &ltem&gtweb.xml&lt/em&gt file:&lt/p&gt
+&ltpre&gt&lt?xml version="1.0" encoding="UTF-8"?&gt
+&ltweb-app xmlns:xsi="http://www.w3 ... version="3.0"&gt
+
+  &ltdisplay-name&gtjersey-rest-jsp-frame-1&lt/display-name&gt
+
+  &ltwelcome-file-list&gt
+    &ltwelcome-file&gtwelcome-file.jsp&lt/welcome-file&gt
+  &lt/welcome-file-list&gt
+
+  &ltfilter&gt
+    &ltfilter-name&gtjersey&lt/filter-name&gt
+    &ltfilter-class&gt
+        com.sun.jersey.spi.container.servlet.ServletContainer
+    &lt/filter-class&gt
+    &ltinit-param&gt
+       &lt!--  "Viewable" JSP root is placed in the /WEB-INF/jsp directory.
+       This means that it's not accessible outside of the web app.
+       There's no way to construct a URL that can retrieve it. --&gt
+       &ltparam-name&gt
+           com.sun.jersey.config.property.JSPTemplatesBasePath
+       &lt/param-name&gt
+       &ltparam-value&gt/WEB-INF/jsp&lt/param-value&gt
+    &lt/init-param&gt
+    &ltinit-param&gt
+       &lt!-- Declare what file type should be accessible thru Jersey
+       without being interpreted as REST call --&gt
+       &ltparam-name&gt
+          com.sun.jersey.config.property.WebPageContentRegex
+       &lt/param-name&gt
+       &ltparam-value&gt
+          (/(image|js|css)/?.*)|(/.*\.jsp)|(/WEB-INF/.*\.jsp)|
+          (/WEB-INF/.*\.jspf)|(/.*\.html)|(/favicon\.ico)|
+          (/robots\.txt)
+       &lt/param-value&gt
+    &lt/init-param&gt
+   &lt/filter&gt
+
+   &ltfilter-mapping&gt
+      &ltfilter-name&gtjersey&lt/filter-name&gt
+      &lturl-pattern&gt/*&lt/url-pattern&gt
+   &lt/filter-mapping&gt
+
+&lt/web-app&gt</pre>
+<p>By default, we open <em>welcome-file.jsp</em> which redirects to a REST call on <em>/index</em>. The <em>IndexModel</em> class (below) forwards to the <em>index.jsp</em> file.</p>
+<p>By setting the <em>JSPTemplatesBasePath</em> parameter to <em>/WEB-INF/jsp</em>, we indicate to Jersey that the "Viewable" root is located in this directory.</p>
+<p>The <em>WebPageContentRegex</em> configuration is quite important. As you might have seen, the REST mapping is set on <em>/*</em>, 
+which means that by default, every HTTP request is treated as REST call. The <em>WebPageContentRegex</em> parameter allows us to exclude "other" web content from this rule. We indicate that we want requests to JSP, HTML, ICO and TXT files treated as non-REST request. Not doing so would exclude our-self (the welcome-file.jsp) from the web application.</p>
+<p><strong>7)</strong> Having Jersey acting as controller/dispatcher, we need to define a model class, in our case to handle the <em>/index</em> REST call:</p>
+<pre>import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+
+import com.sun.jersey.api.view.Viewable;
+
+@Path("/")
+@Produces(MediaType.TEXT_HTML)
+public class IndexModel {
+
+    @GET
+    @Path("index")
+    public Viewable index(@Context HttpServletRequest request) {
+        request.setAttribute("obj", new String("IT Works"));
+        System.out.println("/INDEX called");
+        return new Viewable("/index.jsp", null);
+    }
+}</pre>
+<p>The class simply forwards to the <em>index.jsp</em> template placing a value in the request scope that is displayed by the page using the JSTL tag <em><c:out></em>.</p>
+<p>The complete source code of this first example can be found on GitHub: <a href="https://github.com/imifos/sample-project-library/tree/master/jersey-rest-jsp-frame-1" target="_blank">https://github.com/imifos/sample-project-library/tree/master/jersey-rest-jsp-frame-1</a></p>
+	</div><!-- .entry-content -->
+	
+
+</article>
+
+
+
+
+
+
+		
+		
+		
+		
+		
+	  
+	  </section>
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Sample Projects Library maintained by <a href="https://github.com/imifos">Imifos</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
