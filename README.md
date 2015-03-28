@@ -1,4 +1,4 @@
-sample-project-library
-======================
+Sample Projects Library
+=======================
 
-My tutorial, sample and template projects, mostly discussed in my blog.
+My tutorials, samples and template projects, mostly discussed in my blogs or elsewhere...
